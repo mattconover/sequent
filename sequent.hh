@@ -13,13 +13,20 @@ namespace logic
 template <class>
 struct Wff;
 
+// List of wff
+
+template <class... Ts>
+struct List {constexpr List(Wff<Ts>...) {}};
+
 namespace detail
 {
 
-// Truth-functors
+// Setence letters
 
 template <std::size_t I>
 struct Letter;
+
+// Truth-functors
 
 struct Falsum;
 
@@ -38,15 +45,7 @@ using Impl = Or<Not<U>, V>;
 template <class U, class V>
 using Iff = And<Impl<U, V>, Impl<V, U>>;
 
-}
-
-// List of wff
-
-template <class... Ts>
-struct List {constexpr List(Wff<Ts>...) {}};
-
-namespace detail
-{
+// Utilities for std::tuple
 
 template <class Tup, class T>
 struct ContainsType;
@@ -118,8 +117,7 @@ struct SemanticTableau<List<Or<U, V>, As...>, C, AL, CL> :
 
 template <std::size_t I, class... Cs, class AL, class CL>
 struct SemanticTableau<List<>, List<Letter<I>, Cs...>, AL, CL> :
-  SemanticTableau<List<>, List<Cs...>, AL, AddType<CL, Letter<I>>>
-{};
+  SemanticTableau<List<>, List<Cs...>, AL, AddType<CL, Letter<I>>> {};
 
 // Falsum
 
@@ -147,8 +145,7 @@ struct SemanticTableau<List<>, List<And<U, V>, Cs...>, AL, CL> :
 
 template <class U, class V, class... Cs, class AL, class CL>
 struct SemanticTableau<List<>, List<Or<U, V>, Cs...>, AL, CL> :
-  SemanticTableau<List<>, List<U, V, Cs...>, AL, CL>
-{};
+  SemanticTableau<List<>, List<U, V, Cs...>, AL, CL> {};
 
 //========================= CHECK VALIDITY ===========================
 
@@ -157,11 +154,6 @@ struct SemanticTableau<List<>, List<>, std::tuple<As...>, CL> :
   std::disjunction<ContainsType<CL, As>...> {};
 
 //====================================================================
-
-}
-
-namespace detail
-{
 
 // Using built-in operators to compose sentences
 
@@ -187,7 +179,7 @@ private:
   constexpr static Wff<U> create() {return {};}
 };
 
-}
+} // namespace detail
 
 // The only public way to construct Wff is by applying the built-in operators
 // to the sentence letter and falsum objects.
@@ -243,7 +235,7 @@ constexpr auto X = Wff<detail::Letter<23>>{};
 constexpr auto Y = Wff<detail::Letter<24>>{};
 constexpr auto Z = Wff<detail::Letter<25>>{};
 
-}
+} // namespace sentence_letters
 
 // Sequent
 
@@ -266,6 +258,6 @@ constexpr auto operator|=(Wff<A> a, C c) {return Sequent(a, c);}
 template <class C, class... As>
 constexpr auto operator|=(List<As...> a, C c) {return Sequent(a, c);}
 
-}
+} // namespace logic
 
 #endif
