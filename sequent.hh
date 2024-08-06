@@ -55,16 +55,16 @@ struct ContainsType<std::tuple<Ts...>, T> :
   std::disjunction<std::is_same<T, Ts>...> {};
 
 template <class Set, class T, bool = ContainsType<Set, T>{}>
-struct AddTypeImpl {using type = Set;};
+struct AddType {using type = Set;};
 
 template <class... Ts, class T>
-struct AddTypeImpl<std::tuple<Ts...>, T, false>
+struct AddType<std::tuple<Ts...>, T, false>
 {
   using type = std::tuple<T, Ts...>;
 };
 
 template <class Set, class T>
-using AddType = typename AddTypeImpl<Set, T>::type;
+using AddTypeT = typename AddType<Set, T>::type;
 
 //====================================================================
 //                    Semantic Tableau Algorithm
@@ -82,7 +82,7 @@ struct SemanticTableau;
 
 template <std::size_t I, class... As, class C, class AL, class CL>
 struct SemanticTableau<List<Letter<I>, As...>, C, AL, CL> :
-  SemanticTableau<List<As...>, C, AddType<AL, Letter<I>>, CL> {};
+  SemanticTableau<List<As...>, C, AddTypeT<AL, Letter<I>>, CL> {};
 
 // Falsum
 
@@ -117,7 +117,7 @@ struct SemanticTableau<List<Or<U, V>, As...>, C, AL, CL> :
 
 template <std::size_t I, class... Cs, class AL, class CL>
 struct SemanticTableau<List<>, List<Letter<I>, Cs...>, AL, CL> :
-  SemanticTableau<List<>, List<Cs...>, AL, AddType<CL, Letter<I>>> {};
+  SemanticTableau<List<>, List<Cs...>, AL, AddTypeT<CL, Letter<I>>> {};
 
 // Falsum
 
