@@ -246,7 +246,7 @@ template <class... As, class... Cs>
 struct Sequent<List<As...>, List<Cs...>> :
   detail::SemanticTableau<List<As...>, List<Cs...>>
 {
-  constexpr Sequent(List<As...>, List<Cs...>) {};
+  constexpr Sequent(List<As...>, List<Cs...>) {}
 };
 
 template <class A, class C>
